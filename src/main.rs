@@ -1,7 +1,9 @@
 use colored::*;
+use indicatif::{ProgressBar, ProgressStyle};
 use linguisto::{analyze_directory, LanguageStat};
 use std::env;
 use std::error::Error;
+use std::time::Duration;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<String> = env::args().collect();
@@ -39,7 +41,19 @@ fn main() -> Result<(), Box<dyn Error>> {
         i += 1;
     }
 
+    // 显示进度条（使用 stderr，不会影响 JSON 输出）
+    let pb = ProgressBar::new_spinner();
+    pb.enable_steady_tick(Duration::from_millis(120));
+    pb.set_style(
+        ProgressStyle::with_template("{spinner:.blue} {msg}")
+            .unwrap()
+            .tick_strings(&["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]),
+    );
+    pb.set_message("Analyzing directory...");
+
     let raw_result = analyze_directory(dir_path);
+
+    pb.finish_and_clear();
     
     // 无论是默认还是 --all，都根据排序策略重新计算比例
     let stats = if show_all {

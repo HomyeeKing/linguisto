@@ -25,6 +25,7 @@ colored = "2.1.0"
 ignore = "0.4"
 rayon = "1.10"
 num_cpus = "1.16"
+indicatif = "0.17"
 
 [build-dependencies]
 napi-build = "2"
