@@ -36,13 +36,29 @@
 
 ## Install
 
-### For CLI
+### CLI
+
+#### Via curl
+
+```bash
+# macOS / Linux
+curl -fsSL https://raw.githubusercontent.com/HomyeeKing/linguist/main/scripts/install.sh | sh
+```
+
+```powershell
+# Windows (PowerShell)
+curl -L https://raw.githubusercontent.com/Homyee/linguist/main/scripts/install.ps1 | powershell -NoProfile -
+```
+
+#### Via Cargo
 
 If you have Rust installed, you can install it via Cargo:
 
 ```bash
 cargo install linguisto
 ```
+
+#### Via npm
 
 Or install it globally via npm:
 
