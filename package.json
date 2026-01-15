@@ -1,6 +1,6 @@
 {
   "name": "@homy/linguist",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A high-performance code language analysis tool based on github-linguist",
   "main": "index.js",
   "types": "index.d.ts",
