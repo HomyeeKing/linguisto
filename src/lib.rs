@@ -4,9 +4,11 @@ use ignore::WalkBuilder;
 use linguist::{detect_language_by_extension, detect_language_by_filename, is_vendored};
 use napi::bindgen_prelude::*;
 use napi_derive::napi;
+use rayon::prelude::*;
 use serde::Serialize;
 use std::collections::HashMap;
-use std::fs;
+use std::fs::File;
+use std::io::Read;
 use std::path::Path;
 
 #[napi(object)]
@@ -19,60 +21,67 @@ pub struct LanguageStat {
   pub is_programming: bool,
 }
 
-/// 收集所有文件及其大小，自动尊重 .gitignore 并跳过隐藏文件和第三方库
-fn collect_files(dir_path: &Path) -> Vec<(String, i64)> {
-  let mut files = Vec::new();
+const READ_LIMIT: usize = 32768; // 32KB
+
+/// 读取文件头部内容用于检测
+fn read_file_header(file_path: &str) -> Option<String> {
+  let mut file = File::open(file_path).ok()?;
+  let mut buffer = vec![0; READ_LIMIT];
+  let n = file.read(&mut buffer).ok()?;
+  String::from_utf8(buffer[..n].to_vec()).ok()
+}
+
+/// 并行收集所有文件及其大小
+fn collect_files_parallel(dir_path: &Path) -> Vec<(String, i64)> {
+  let (tx, rx) = std::sync::mpsc::channel();
 
   let walker = WalkBuilder::new(dir_path)
-    .hidden(true) // 跳过隐藏文件/目录（如 .git）
-    .git_ignore(true) // 尊重 .gitignore
-    .build();
+    .hidden(true)
+    .git_ignore(true)
+    .threads(num_cpus::get()) // 使用多线程遍历
+    .build_parallel();
 
-  for result in walker {
-    if let Ok(entry) = result {
-      // 只处理文件
-      if entry.file_type().map_or(false, |ft| ft.is_file()) {
-        let path = entry.path();
-        
-        // 使用 linguist 原生的 is_vendored 进一步过滤掉第三方依赖（如 vendor/ 目录）
-        if is_vendored(path).unwrap_or(false) {
-          continue;
-        }
-
-        if let Ok(metadata) = entry.metadata() {
-          if let Some(path_str) = path.to_str() {
-            files.push((path_str.to_string(), metadata.len() as i64));
+  walker.run(|| {
+    let tx = tx.clone();
+    Box::new(move |result| {
+      if let Ok(entry) = result {
+        if entry.file_type().map_or(false, |ft| ft.is_file()) {
+          let path = entry.path();
+          if !is_vendored(path).unwrap_or(false) {
+            if let Ok(metadata) = entry.metadata() {
+              if let Some(path_str) = path.to_str() {
+                let _ = tx.send((path_str.to_string(), metadata.len() as i64));
+              }
+            }
           }
         }
       }
-    }
-  }
+      ignore::WalkState::Continue
+    })
+  });
 
-  files
+  drop(tx);
+  rx.into_iter().collect()
 }
 
-/// 检测单个文件的语言
+/// 检测单个文件的语言（优化版：按需读取头部）
 fn detect_file_language(file_path: &str) -> Option<(String, bool)> {
-  let content = fs::read_to_string(file_path).ok();
-
   // 1. 尝试通过文件名检测
   if let Ok(languages) = detect_language_by_filename(file_path) {
     if !languages.is_empty() {
-      let lang = if languages.len() > 1 {
-        if let Some(content_str) = &content {
-          if let Ok(disambiguated) = linguist::disambiguate(file_path, content_str) {
-            disambiguated.first().cloned()
-          } else {
-            None
-          }
+      let final_lang = if languages.len() > 1 {
+        if let Some(content_str) = read_file_header(file_path) {
+          linguist::disambiguate(file_path, &content_str)
+            .ok()
+            .and_then(|d| d.first().cloned())
+            .unwrap_or_else(|| languages[0].clone())
         } else {
-          None
+          languages[0].clone()
         }
       } else {
-        None
+        languages[0].clone()
       };
-      
-      let final_lang = lang.unwrap_or_else(|| languages[0].clone());
+
       return Some((
         final_lang.name.to_string(),
         is_primary_language(&final_lang.definition.language_type),
@@ -85,21 +94,19 @@ fn detect_file_language(file_path: &str) -> Option<(String, bool)> {
   if path.extension().and_then(|ext| ext.to_str()).is_some() {
     if let Ok(languages) = detect_language_by_extension(file_path) {
       if !languages.is_empty() {
-        let lang = if languages.len() > 1 {
-          if let Some(content_str) = &content {
-            if let Ok(disambiguated) = linguist::disambiguate(file_path, content_str) {
-              disambiguated.first().cloned()
-            } else {
-              None
-            }
+        let final_lang = if languages.len() > 1 {
+          if let Some(content_str) = read_file_header(file_path) {
+            linguist::disambiguate(file_path, &content_str)
+              .ok()
+              .and_then(|d| d.first().cloned())
+              .unwrap_or_else(|| languages[0].clone())
           } else {
-            None
+            languages[0].clone()
           }
         } else {
-          None
+          languages[0].clone()
         };
 
-        let final_lang = lang.unwrap_or_else(|| languages[0].clone());
         return Some((
           final_lang.name.to_string(),
           is_primary_language(&final_lang.definition.language_type),
@@ -111,7 +118,7 @@ fn detect_file_language(file_path: &str) -> Option<(String, bool)> {
   None
 }
 
-/// 判定是否为主要语言（包括编程语言和标记语言如 CSS/HTML）
+/// 判定是否为主要语言
 fn is_primary_language(lang_type: &linguist_types::LanguageType) -> bool {
   matches!(
     lang_type,
@@ -149,21 +156,35 @@ impl Task for AnalyzeTask {
 
 fn analyze_directory_internal(dir_path: String) -> Vec<LanguageStat> {
   let path = Path::new(&dir_path);
-  let files = collect_files(path);
-  let mut language_stats: HashMap<String, (u32, i64, bool)> = HashMap::new();
+  let files = collect_files_parallel(path);
   let total_bytes: i64 = files.iter().map(|f| f.1).sum();
 
   if total_bytes == 0 {
     return Vec::new();
   }
 
-  for (file_path, size) in &files {
-    if let Some((language, is_prog)) = detect_file_language(file_path) {
-      let entry = language_stats.entry(language).or_insert((0, 0, is_prog));
-      entry.0 += 1;
-      entry.1 += size;
-    }
-  }
+  // 并行检测语言
+  let language_stats = files
+    .par_iter()
+    .fold(
+      HashMap::new,
+      |mut acc: HashMap<String, (u32, i64, bool)>, (file_path, size)| {
+        if let Some((language, is_prog)) = detect_file_language(file_path) {
+          let entry = acc.entry(language).or_insert((0u32, 0i64, is_prog));
+          entry.0 += 1;
+          entry.1 += *size;
+        }
+        acc
+      },
+    )
+    .reduce(HashMap::new, |mut acc1, acc2| {
+      for (lang, (count, bytes, is_prog)) in acc2 {
+        let entry = acc1.entry(lang).or_insert((0, 0, is_prog));
+        entry.0 += count;
+        entry.1 += bytes;
+      }
+      acc1
+    });
 
   let mut result: Vec<LanguageStat> = language_stats
     .into_iter()

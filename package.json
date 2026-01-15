@@ -63,8 +63,7 @@
     "release:beta": "bumpp --preid beta -x 'npm publish --tag beta --access public'",
     "release": "bumpp -x 'npm publish --access public'",
     "test": "ava",
-    "version": "napi version",
-    "build:all": "npm run build && cargo build"
+    "version": "napi version"
   },
   "devDependencies": {
     "@emnapi/core": "^1.5.0",
