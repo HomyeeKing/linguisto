@@ -25,6 +25,7 @@
 - [Usage](#usage)
   - [CLI Usage](#cli-usage)
   - [Programmatic Usage](#programmatic-usage)
+- [Benchmark](#benchmark)
 - [References](#references)
   - [analyzeDirectory(dir)](#analyzedirectorydir)
   - [analyzeDirectorySync(dir)](#analyzedirectorysyncdir)
@@ -76,7 +77,7 @@ linguisto /path/to/your/project
 #### Common Options
 
 - `--json`: Output results in JSON format.
-- `--all`: Show all detected files (by default, it only shows programming languages and filters out some configuration files).
+- `--all`: Show all calculated language statistics. (Currently behaves the same as the default view, kept for compatibility.)
 - `--sort <type>`: Sort results. `type` can be `file_count` (descending) or `bytes` (descending, default).
 - `--max-lang <number>`: Maximum number of languages to display individually. Remaining languages will be grouped into "Other" (default: 6).
 
@@ -107,6 +108,30 @@ const syncStats = analyzeDirectorySync('./src');
 console.log(syncStats);
 ```
 
+## Benchmark
+
+This project includes a simple benchmark comparing **linguisto (native Rust + NAPI)** with the pure JavaScript implementation **linguist-js**.
+
+The benchmark script is located at [`benchmark/bench.ts`](./benchmark/bench.ts) and can be run with:
+
+```bash
+pnpm bench
+```
+
+Below is a sample result on this repository (macOS, Node.js, default settings):
+
+```text
+Running benchmark...
+┌─────────┬──────────────────────┬────────────────────┬─────────────────────┬────────────────────────┬────────────────────────┬─────────┐
+│ (index) │ Task name            │ Latency avg (ns)   │ Latency med (ns)    │ Throughput avg (ops/s) │ Throughput med (ops/s) │ Samples │
+├─────────┼──────────────────────┼────────────────────┼─────────────────────┼────────────────────────┼────────────────────────┼─────────┤
+│ 0       │ 'linguist-js'        │ '87352945 ± 0.86%' │ '86415417 ± 955312' │ '11 ± 0.79%'           │ '12 ± 0'               │ 64      │
+│ 1       │ 'linguisto (native)' │ '2903259 ± 2.20%'  │ '3118667 ± 52375'   │ '363 ± 2.64%'          │ '321 ± 5'              │ 345     │
+└─────────┴──────────────────────┴────────────────────┴─────────────────────┴────────────────────────┴────────────────────────┴─────────┘
+```
+
+From this run, **linguisto (native)** achieves roughly **30× higher throughput** than **linguist-js** on this project, thanks to Rust's multi-threaded file system traversal and native execution.
+
 ## References
 
 ### analyzeDirectory(dir)
@@ -131,7 +156,6 @@ Each statistical object contains the following fields:
 | `count` | `number` | Number of files for this language |
 | `bytes` | `number` | Total bytes occupied by files of this language |
 | `ratio` | `number` | Percentage in the overall project (0.0 - 1.0) |
-| `isProgramming` | `boolean` | Whether it is a programming language |
 
 ## Credits
 
