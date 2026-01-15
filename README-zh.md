@@ -76,7 +76,7 @@ linguisto /path/to/your/project
 #### 常用选项
 
 - `--json`: 以 JSON 格式输出结果。
-- `--all`: 显示所有检测到的文件（默认仅显示编程语言，过滤掉部分配置文件等）。
+- `--all`: 显示所有计算出的语言统计结果（目前与默认视图行为一致，主要用于兼容保留）。
 - `--sort <type>`: 排序方式。`type` 可以是 `file_count`（按文件数降序）或 `bytes`（按字节数降序，默认）。
 - `--max-lang <number>`: 最多显示的语言数量。多出的语言将被归类为 "Other"（默认：6）。
 
@@ -131,7 +131,6 @@ console.log(syncStats);
 | `count` | `number` | 该语言的文件数量 |
 | `bytes` | `number` | 该语言文件占用的总字节数 |
 | `ratio` | `number` | 在整个项目中的占比 (0.0 - 1.0) |
-| `isProgramming` | `boolean` | 是否为编程语言 |
 
 ## 鸣谢 (Credits)
 

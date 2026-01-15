@@ -1,7 +1,9 @@
 use colored::*;
+use indicatif::{ProgressBar, ProgressStyle};
 use linguisto::{analyze_directory, LanguageStat};
 use std::env;
 use std::error::Error;
+use std::time::Duration;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<String> = env::args().collect();
@@ -39,7 +41,19 @@ fn main() -> Result<(), Box<dyn Error>> {
         i += 1;
     }
 
+    // 显示进度条（使用 stderr，不会影响 JSON 输出）
+    let pb = ProgressBar::new_spinner();
+    pb.enable_steady_tick(Duration::from_millis(120));
+    pb.set_style(
+        ProgressStyle::with_template("{spinner:.blue} {msg}")
+            .unwrap()
+            .tick_strings(&["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]),
+    );
+    pb.set_message("Analyzing directory...");
+
     let raw_result = analyze_directory(dir_path);
+
+    pb.finish_and_clear();
     
     // 无论是默认还是 --all，都根据排序策略重新计算比例
     let stats = if show_all {
@@ -76,14 +90,13 @@ fn collapse_tail_to_others(mut stats: Vec<LanguageStat>, max_lang: usize) -> Vec
         others_bytes += stat.bytes;
         others_ratio += stat.ratio;
     }
-
-    result.push(LanguageStat {
-        lang: "Other".to_string(),
-        count: others_count,
-        bytes: others_bytes,
-        ratio: others_ratio,
-        is_programming: true,
-    });
+  
+  result.push(LanguageStat {
+    lang: "Other".to_string(),
+    count: others_count,
+    bytes: others_bytes,
+    ratio: others_ratio,
+  });
 
     result
 }
@@ -110,14 +123,8 @@ fn recalculate_ratios(mut stats: Vec<LanguageStat>, sort_by_bytes: bool) -> Vec<
 }
 
 fn process_stats_for_ui(stats: Vec<LanguageStat>, sort_by_bytes: bool) -> Vec<LanguageStat> {
-    // 1. 过滤出编程语言
-    let programming_stats: Vec<LanguageStat> = stats
-        .into_iter()
-        .filter(|s| s.is_programming)
-        .collect();
-
-    // 2. 重新计算比例并排序
-    recalculate_ratios(programming_stats, sort_by_bytes)
+    // Rust 侧已经对语言类型做了筛选，这里只负责重新计算比例并排序
+    recalculate_ratios(stats, sort_by_bytes)
 }
 
 fn get_color(lang: &str) -> Color {
