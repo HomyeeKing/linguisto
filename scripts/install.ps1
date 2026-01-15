@@ -2,14 +2,14 @@ $ErrorActionPreference = "Stop"
 
 $repo = "HomyeeKing/linguist"
 
-# 获取版本：优先使用环境变量，其次自动从 GitHub Releases latest 获取
+# Get version: prefer env var, otherwise fetch from GitHub Releases latest
 if ($env:LINGUISTO_VERSION) {
   $version = $env:LINGUISTO_VERSION
 } else {
   Write-Host "Fetching latest version from GitHub releases..."
   $latest = Invoke-WebRequest -Uri "https://api.github.com/repos/$repo/releases/latest" -UseBasicParsing | Select-Object -ExpandProperty Content | ConvertFrom-Json
   if (-not $latest.tag_name) {
-    Write-Error "无法从 GitHub 获取最新版本号，请设置环境变量 LINGUISTO_VERSION 后重试"
+    Write-Error "Failed to fetch latest version from GitHub, please set LINGUISTO_VERSION manually and retry."
   }
   $version = $latest.tag_name
 }
@@ -32,20 +32,20 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 
 $exePath = Join-Path $tmp.FullName "linguist.exe"
 if (-not (Test-Path $exePath)) {
-  Write-Error "解压后未找到 linguist.exe"
+  Write-Error "linguist.exe not found after extraction."
 }
 
 $targetPath = Join-Path $installDir "linguist.exe"
 Copy-Item $exePath $targetPath -Force
 
-Write-Host "linguist 已安装到 $targetPath"
+Write-Host "linguist installed to $targetPath"
 
 $userPath = [Environment]::GetEnvironmentVariable("PATH", "User")
 if ($userPath -notlike "*$installDir*") {
-  Write-Host "注意：$installDir 尚未在 PATH 中。"
-  Write-Host "你可以在 PowerShell 中执行如下命令将其加入 PATH："
+  Write-Host "Note: $installDir is not in your PATH."
+  Write-Host "You can add it with the following command in PowerShell:"
   Write-Host "  [Environment]::SetEnvironmentVariable(\"PATH\", \"$installDir;\" + [Environment]::GetEnvironmentVariable(\"PATH\", \"User\"), \"User\")"
-  Write-Host "然后重新打开终端后即可使用 linguist。"
+  Write-Host "Then reopen your terminal and run 'linguist'."
 } else {
-  Write-Host "你可以直接运行: linguist"
+  Write-Host "You can now run: linguist"
 }

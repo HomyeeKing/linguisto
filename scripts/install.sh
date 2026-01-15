@@ -3,14 +3,14 @@ set -e
 
 REPO="HomyeeKing/linguist"
 
-# 获取版本：优先使用环境变量，其次自动从 GitHub Releases latest 获取
+# Get version: prefer env var, otherwise fetch from GitHub Releases latest
 if [ -n "$LINGUISTO_VERSION" ]; then
   VERSION="$LINGUISTO_VERSION"
 else
   echo "Fetching latest version from GitHub releases..."
   VERSION=$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" 2>/dev/null | sed -n 's/  \"tag_name\": \"\(.*\)\",/\1/p' | head -n 1)
   if [ -z "$VERSION" ]; then
-    echo "无法从 GitHub 获取最新版本号，请设置环境变量 LINGUISTO_VERSION 后重试" 1>&2
+    echo "Failed to fetch latest version from GitHub, please set LINGUISTO_VERSION manually and retry" 1>&2
     exit 1
   fi
 fi
@@ -22,7 +22,7 @@ case "$uname_s" in
   Linux)  os="unknown-linux-gnu" ;;
   Darwin) os="apple-darwin" ;;
   *)
-    echo "不支持的系统: $uname_s" >&2
+    echo "Unsupported OS: $uname_s" >&2
     exit 1
     ;;
 esac
@@ -31,7 +31,7 @@ case "$uname_m" in
   x86_64|amd64) arch="x86_64" ;;
   arm64|aarch64) arch="aarch64" ;;
   *)
-    echo "不支持的架构: $uname_m" >&2
+    echo "Unsupported architecture: $uname_m" >&2
     exit 1
     ;;
 esac
@@ -53,19 +53,19 @@ cd "$TMP_DIR"
 tar -xzf "$TAR_NAME"
 
 if [ ! -f linguist ]; then
-  echo "解压后未找到 linguist 可执行文件" >&2
+  echo "linguist executable not found after extraction" >&2
   exit 1
 fi
 
 chmod +x linguist
 mv linguist "$INSTALL_DIR/linguist"
 
-echo "linguist 已安装到 $INSTALL_DIR/linguist"
+echo "linguist installed to $INSTALL_DIR/linguist"
 
 case ":$PATH:" in
   *":$INSTALL_DIR:"*)
-    echo "你可以直接运行: linguist" ;;
+    echo "You can now run: linguist" ;;
   *)
-    echo "注意：$INSTALL_DIR 未在 PATH 中，请手动添加:" >&2
+    echo "Note: $INSTALL_DIR is not in your PATH. Please add it manually:" >&2
     echo "  export PATH=\"$INSTALL_DIR:\$PATH\"" >&2 ;;
 esac
