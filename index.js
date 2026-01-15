@@ -73,13 +73,13 @@ function requireNative() {
   } else if (process.platform === 'android') {
     if (process.arch === 'arm64') {
       try {
-        return require('./package-template.android-arm64.node')
+        return require('./linguisto.android-arm64.node')
       } catch (e) {
         loadErrors.push(e)
       }
       try {
-        const binding = require('@napi-rs/package-template-pnpm-android-arm64')
-        const bindingPackageVersion = require('@napi-rs/package-template-pnpm-android-arm64/package.json').version
+        const binding = require('@homy/linguist-android-arm64')
+        const bindingPackageVersion = require('@homy/linguist-android-arm64/package.json').version
         if (bindingPackageVersion !== '1.1.1' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
           throw new Error(`Native binding package version mismatch, expected 1.1.1 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
@@ -89,13 +89,13 @@ function requireNative() {
       }
     } else if (process.arch === 'arm') {
       try {
-        return require('./package-template.android-arm-eabi.node')
+        return require('./linguisto.android-arm-eabi.node')
       } catch (e) {
         loadErrors.push(e)
       }
       try {
-        const binding = require('@napi-rs/package-template-pnpm-android-arm-eabi')
-        const bindingPackageVersion = require('@napi-rs/package-template-pnpm-android-arm-eabi/package.json').version
+        const binding = require('@homy/linguist-android-arm-eabi')
+        const bindingPackageVersion = require('@homy/linguist-android-arm-eabi/package.json').version
         if (bindingPackageVersion !== '1.1.1' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
           throw new Error(`Native binding package version mismatch, expected 1.1.1 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
@@ -109,13 +109,13 @@ function requireNative() {
   } else if (process.platform === 'win32') {
     if (process.arch === 'x64') {
       try {
-        return require('./package-template.win32-x64-msvc.node')
+        return require('./linguisto.win32-x64-msvc.node')
       } catch (e) {
         loadErrors.push(e)
       }
       try {
-        const binding = require('@napi-rs/package-template-pnpm-win32-x64-msvc')
-        const bindingPackageVersion = require('@napi-rs/package-template-pnpm-win32-x64-msvc/package.json').version
+        const binding = require('@homy/linguist-win32-x64-msvc')
+        const bindingPackageVersion = require('@homy/linguist-win32-x64-msvc/package.json').version
         if (bindingPackageVersion !== '1.1.1' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
           throw new Error(`Native binding package version mismatch, expected 1.1.1 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
@@ -125,13 +125,13 @@ function requireNative() {
       }
     } else if (process.arch === 'ia32') {
       try {
-        return require('./package-template.win32-ia32-msvc.node')
+        return require('./linguisto.win32-ia32-msvc.node')
       } catch (e) {
         loadErrors.push(e)
       }
       try {
-        const binding = require('@napi-rs/package-template-pnpm-win32-ia32-msvc')
-        const bindingPackageVersion = require('@napi-rs/package-template-pnpm-win32-ia32-msvc/package.json').version
+        const binding = require('@homy/linguist-win32-ia32-msvc')
+        const bindingPackageVersion = require('@homy/linguist-win32-ia32-msvc/package.json').version
         if (bindingPackageVersion !== '1.1.1' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
           throw new Error(`Native binding package version mismatch, expected 1.1.1 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
@@ -141,13 +141,13 @@ function requireNative() {
       }
     } else if (process.arch === 'arm64') {
       try {
-        return require('./package-template.win32-arm64-msvc.node')
+        return require('./linguisto.win32-arm64-msvc.node')
       } catch (e) {
         loadErrors.push(e)
       }
       try {
-        const binding = require('@napi-rs/package-template-pnpm-win32-arm64-msvc')
-        const bindingPackageVersion = require('@napi-rs/package-template-pnpm-win32-arm64-msvc/package.json').version
+        const binding = require('@homy/linguist-win32-arm64-msvc')
+        const bindingPackageVersion = require('@homy/linguist-win32-arm64-msvc/package.json').version
         if (bindingPackageVersion !== '1.1.1' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
           throw new Error(`Native binding package version mismatch, expected 1.1.1 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
@@ -160,13 +160,13 @@ function requireNative() {
     }
   } else if (process.platform === 'darwin') {
     try {
-      return require('./package-template.darwin-universal.node')
+      return require('./linguisto.darwin-universal.node')
     } catch (e) {
       loadErrors.push(e)
     }
     try {
-      const binding = require('@napi-rs/package-template-pnpm-darwin-universal')
-      const bindingPackageVersion = require('@napi-rs/package-template-pnpm-darwin-universal/package.json').version
+      const binding = require('@homy/linguist-darwin-universal')
+      const bindingPackageVersion = require('@homy/linguist-darwin-universal/package.json').version
       if (bindingPackageVersion !== '1.1.1' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
         throw new Error(`Native binding package version mismatch, expected 1.1.1 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
       }
@@ -176,13 +176,13 @@ function requireNative() {
     }
     if (process.arch === 'x64') {
       try {
-        return require('./package-template.darwin-x64.node')
+        return require('./linguisto.darwin-x64.node')
       } catch (e) {
         loadErrors.push(e)
       }
       try {
-        const binding = require('@napi-rs/package-template-pnpm-darwin-x64')
-        const bindingPackageVersion = require('@napi-rs/package-template-pnpm-darwin-x64/package.json').version
+        const binding = require('@homy/linguist-darwin-x64')
+        const bindingPackageVersion = require('@homy/linguist-darwin-x64/package.json').version
         if (bindingPackageVersion !== '1.1.1' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
           throw new Error(`Native binding package version mismatch, expected 1.1.1 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
@@ -192,13 +192,13 @@ function requireNative() {
       }
     } else if (process.arch === 'arm64') {
       try {
-        return require('./package-template.darwin-arm64.node')
+        return require('./linguisto.darwin-arm64.node')
       } catch (e) {
         loadErrors.push(e)
       }
       try {
-        const binding = require('@napi-rs/package-template-pnpm-darwin-arm64')
-        const bindingPackageVersion = require('@napi-rs/package-template-pnpm-darwin-arm64/package.json').version
+        const binding = require('@homy/linguist-darwin-arm64')
+        const bindingPackageVersion = require('@homy/linguist-darwin-arm64/package.json').version
         if (bindingPackageVersion !== '1.1.1' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
           throw new Error(`Native binding package version mismatch, expected 1.1.1 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
@@ -212,13 +212,13 @@ function requireNative() {
   } else if (process.platform === 'freebsd') {
     if (process.arch === 'x64') {
       try {
-        return require('./package-template.freebsd-x64.node')
+        return require('./linguisto.freebsd-x64.node')
       } catch (e) {
         loadErrors.push(e)
       }
       try {
-        const binding = require('@napi-rs/package-template-pnpm-freebsd-x64')
-        const bindingPackageVersion = require('@napi-rs/package-template-pnpm-freebsd-x64/package.json').version
+        const binding = require('@homy/linguist-freebsd-x64')
+        const bindingPackageVersion = require('@homy/linguist-freebsd-x64/package.json').version
         if (bindingPackageVersion !== '1.1.1' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
           throw new Error(`Native binding package version mismatch, expected 1.1.1 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
@@ -228,13 +228,13 @@ function requireNative() {
       }
     } else if (process.arch === 'arm64') {
       try {
-        return require('./package-template.freebsd-arm64.node')
+        return require('./linguisto.freebsd-arm64.node')
       } catch (e) {
         loadErrors.push(e)
       }
       try {
-        const binding = require('@napi-rs/package-template-pnpm-freebsd-arm64')
-        const bindingPackageVersion = require('@napi-rs/package-template-pnpm-freebsd-arm64/package.json').version
+        const binding = require('@homy/linguist-freebsd-arm64')
+        const bindingPackageVersion = require('@homy/linguist-freebsd-arm64/package.json').version
         if (bindingPackageVersion !== '1.1.1' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
           throw new Error(`Native binding package version mismatch, expected 1.1.1 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
@@ -249,13 +249,13 @@ function requireNative() {
     if (process.arch === 'x64') {
       if (isMusl()) {
         try {
-          return require('./package-template.linux-x64-musl.node')
+          return require('./linguisto.linux-x64-musl.node')
         } catch (e) {
           loadErrors.push(e)
         }
         try {
-          const binding = require('@napi-rs/package-template-pnpm-linux-x64-musl')
-          const bindingPackageVersion = require('@napi-rs/package-template-pnpm-linux-x64-musl/package.json').version
+          const binding = require('@homy/linguist-linux-x64-musl')
+          const bindingPackageVersion = require('@homy/linguist-linux-x64-musl/package.json').version
           if (bindingPackageVersion !== '1.1.1' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
             throw new Error(`Native binding package version mismatch, expected 1.1.1 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
@@ -265,13 +265,13 @@ function requireNative() {
         }
       } else {
         try {
-          return require('./package-template.linux-x64-gnu.node')
+          return require('./linguisto.linux-x64-gnu.node')
         } catch (e) {
           loadErrors.push(e)
         }
         try {
-          const binding = require('@napi-rs/package-template-pnpm-linux-x64-gnu')
-          const bindingPackageVersion = require('@napi-rs/package-template-pnpm-linux-x64-gnu/package.json').version
+          const binding = require('@homy/linguist-linux-x64-gnu')
+          const bindingPackageVersion = require('@homy/linguist-linux-x64-gnu/package.json').version
           if (bindingPackageVersion !== '1.1.1' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
             throw new Error(`Native binding package version mismatch, expected 1.1.1 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
@@ -283,13 +283,13 @@ function requireNative() {
     } else if (process.arch === 'arm64') {
       if (isMusl()) {
         try {
-          return require('./package-template.linux-arm64-musl.node')
+          return require('./linguisto.linux-arm64-musl.node')
         } catch (e) {
           loadErrors.push(e)
         }
         try {
-          const binding = require('@napi-rs/package-template-pnpm-linux-arm64-musl')
-          const bindingPackageVersion = require('@napi-rs/package-template-pnpm-linux-arm64-musl/package.json').version
+          const binding = require('@homy/linguist-linux-arm64-musl')
+          const bindingPackageVersion = require('@homy/linguist-linux-arm64-musl/package.json').version
           if (bindingPackageVersion !== '1.1.1' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
             throw new Error(`Native binding package version mismatch, expected 1.1.1 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
@@ -299,13 +299,13 @@ function requireNative() {
         }
       } else {
         try {
-          return require('./package-template.linux-arm64-gnu.node')
+          return require('./linguisto.linux-arm64-gnu.node')
         } catch (e) {
           loadErrors.push(e)
         }
         try {
-          const binding = require('@napi-rs/package-template-pnpm-linux-arm64-gnu')
-          const bindingPackageVersion = require('@napi-rs/package-template-pnpm-linux-arm64-gnu/package.json').version
+          const binding = require('@homy/linguist-linux-arm64-gnu')
+          const bindingPackageVersion = require('@homy/linguist-linux-arm64-gnu/package.json').version
           if (bindingPackageVersion !== '1.1.1' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
             throw new Error(`Native binding package version mismatch, expected 1.1.1 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
@@ -317,13 +317,13 @@ function requireNative() {
     } else if (process.arch === 'arm') {
       if (isMusl()) {
         try {
-          return require('./package-template.linux-arm-musleabihf.node')
+          return require('./linguisto.linux-arm-musleabihf.node')
         } catch (e) {
           loadErrors.push(e)
         }
         try {
-          const binding = require('@napi-rs/package-template-pnpm-linux-arm-musleabihf')
-          const bindingPackageVersion = require('@napi-rs/package-template-pnpm-linux-arm-musleabihf/package.json').version
+          const binding = require('@homy/linguist-linux-arm-musleabihf')
+          const bindingPackageVersion = require('@homy/linguist-linux-arm-musleabihf/package.json').version
           if (bindingPackageVersion !== '1.1.1' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
             throw new Error(`Native binding package version mismatch, expected 1.1.1 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
@@ -333,13 +333,13 @@ function requireNative() {
         }
       } else {
         try {
-          return require('./package-template.linux-arm-gnueabihf.node')
+          return require('./linguisto.linux-arm-gnueabihf.node')
         } catch (e) {
           loadErrors.push(e)
         }
         try {
-          const binding = require('@napi-rs/package-template-pnpm-linux-arm-gnueabihf')
-          const bindingPackageVersion = require('@napi-rs/package-template-pnpm-linux-arm-gnueabihf/package.json').version
+          const binding = require('@homy/linguist-linux-arm-gnueabihf')
+          const bindingPackageVersion = require('@homy/linguist-linux-arm-gnueabihf/package.json').version
           if (bindingPackageVersion !== '1.1.1' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
             throw new Error(`Native binding package version mismatch, expected 1.1.1 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
@@ -351,13 +351,13 @@ function requireNative() {
     } else if (process.arch === 'loong64') {
       if (isMusl()) {
         try {
-          return require('./package-template.linux-loong64-musl.node')
+          return require('./linguisto.linux-loong64-musl.node')
         } catch (e) {
           loadErrors.push(e)
         }
         try {
-          const binding = require('@napi-rs/package-template-pnpm-linux-loong64-musl')
-          const bindingPackageVersion = require('@napi-rs/package-template-pnpm-linux-loong64-musl/package.json').version
+          const binding = require('@homy/linguist-linux-loong64-musl')
+          const bindingPackageVersion = require('@homy/linguist-linux-loong64-musl/package.json').version
           if (bindingPackageVersion !== '1.1.1' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
             throw new Error(`Native binding package version mismatch, expected 1.1.1 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
@@ -367,13 +367,13 @@ function requireNative() {
         }
       } else {
         try {
-          return require('./package-template.linux-loong64-gnu.node')
+          return require('./linguisto.linux-loong64-gnu.node')
         } catch (e) {
           loadErrors.push(e)
         }
         try {
-          const binding = require('@napi-rs/package-template-pnpm-linux-loong64-gnu')
-          const bindingPackageVersion = require('@napi-rs/package-template-pnpm-linux-loong64-gnu/package.json').version
+          const binding = require('@homy/linguist-linux-loong64-gnu')
+          const bindingPackageVersion = require('@homy/linguist-linux-loong64-gnu/package.json').version
           if (bindingPackageVersion !== '1.1.1' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
             throw new Error(`Native binding package version mismatch, expected 1.1.1 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
@@ -385,13 +385,13 @@ function requireNative() {
     } else if (process.arch === 'riscv64') {
       if (isMusl()) {
         try {
-          return require('./package-template.linux-riscv64-musl.node')
+          return require('./linguisto.linux-riscv64-musl.node')
         } catch (e) {
           loadErrors.push(e)
         }
         try {
-          const binding = require('@napi-rs/package-template-pnpm-linux-riscv64-musl')
-          const bindingPackageVersion = require('@napi-rs/package-template-pnpm-linux-riscv64-musl/package.json').version
+          const binding = require('@homy/linguist-linux-riscv64-musl')
+          const bindingPackageVersion = require('@homy/linguist-linux-riscv64-musl/package.json').version
           if (bindingPackageVersion !== '1.1.1' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
             throw new Error(`Native binding package version mismatch, expected 1.1.1 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
@@ -401,13 +401,13 @@ function requireNative() {
         }
       } else {
         try {
-          return require('./package-template.linux-riscv64-gnu.node')
+          return require('./linguisto.linux-riscv64-gnu.node')
         } catch (e) {
           loadErrors.push(e)
         }
         try {
-          const binding = require('@napi-rs/package-template-pnpm-linux-riscv64-gnu')
-          const bindingPackageVersion = require('@napi-rs/package-template-pnpm-linux-riscv64-gnu/package.json').version
+          const binding = require('@homy/linguist-linux-riscv64-gnu')
+          const bindingPackageVersion = require('@homy/linguist-linux-riscv64-gnu/package.json').version
           if (bindingPackageVersion !== '1.1.1' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
             throw new Error(`Native binding package version mismatch, expected 1.1.1 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
@@ -418,13 +418,13 @@ function requireNative() {
       }
     } else if (process.arch === 'ppc64') {
       try {
-        return require('./package-template.linux-ppc64-gnu.node')
+        return require('./linguisto.linux-ppc64-gnu.node')
       } catch (e) {
         loadErrors.push(e)
       }
       try {
-        const binding = require('@napi-rs/package-template-pnpm-linux-ppc64-gnu')
-        const bindingPackageVersion = require('@napi-rs/package-template-pnpm-linux-ppc64-gnu/package.json').version
+        const binding = require('@homy/linguist-linux-ppc64-gnu')
+        const bindingPackageVersion = require('@homy/linguist-linux-ppc64-gnu/package.json').version
         if (bindingPackageVersion !== '1.1.1' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
           throw new Error(`Native binding package version mismatch, expected 1.1.1 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
@@ -434,13 +434,13 @@ function requireNative() {
       }
     } else if (process.arch === 's390x') {
       try {
-        return require('./package-template.linux-s390x-gnu.node')
+        return require('./linguisto.linux-s390x-gnu.node')
       } catch (e) {
         loadErrors.push(e)
       }
       try {
-        const binding = require('@napi-rs/package-template-pnpm-linux-s390x-gnu')
-        const bindingPackageVersion = require('@napi-rs/package-template-pnpm-linux-s390x-gnu/package.json').version
+        const binding = require('@homy/linguist-linux-s390x-gnu')
+        const bindingPackageVersion = require('@homy/linguist-linux-s390x-gnu/package.json').version
         if (bindingPackageVersion !== '1.1.1' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
           throw new Error(`Native binding package version mismatch, expected 1.1.1 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
@@ -454,13 +454,13 @@ function requireNative() {
   } else if (process.platform === 'openharmony') {
     if (process.arch === 'arm64') {
       try {
-        return require('./package-template.openharmony-arm64.node')
+        return require('./linguisto.openharmony-arm64.node')
       } catch (e) {
         loadErrors.push(e)
       }
       try {
-        const binding = require('@napi-rs/package-template-pnpm-openharmony-arm64')
-        const bindingPackageVersion = require('@napi-rs/package-template-pnpm-openharmony-arm64/package.json').version
+        const binding = require('@homy/linguist-openharmony-arm64')
+        const bindingPackageVersion = require('@homy/linguist-openharmony-arm64/package.json').version
         if (bindingPackageVersion !== '1.1.1' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
           throw new Error(`Native binding package version mismatch, expected 1.1.1 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
@@ -470,13 +470,13 @@ function requireNative() {
       }
     } else if (process.arch === 'x64') {
       try {
-        return require('./package-template.openharmony-x64.node')
+        return require('./linguisto.openharmony-x64.node')
       } catch (e) {
         loadErrors.push(e)
       }
       try {
-        const binding = require('@napi-rs/package-template-pnpm-openharmony-x64')
-        const bindingPackageVersion = require('@napi-rs/package-template-pnpm-openharmony-x64/package.json').version
+        const binding = require('@homy/linguist-openharmony-x64')
+        const bindingPackageVersion = require('@homy/linguist-openharmony-x64/package.json').version
         if (bindingPackageVersion !== '1.1.1' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
           throw new Error(`Native binding package version mismatch, expected 1.1.1 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
@@ -486,13 +486,13 @@ function requireNative() {
       }
     } else if (process.arch === 'arm') {
       try {
-        return require('./package-template.openharmony-arm.node')
+        return require('./linguisto.openharmony-arm.node')
       } catch (e) {
         loadErrors.push(e)
       }
       try {
-        const binding = require('@napi-rs/package-template-pnpm-openharmony-arm')
-        const bindingPackageVersion = require('@napi-rs/package-template-pnpm-openharmony-arm/package.json').version
+        const binding = require('@homy/linguist-openharmony-arm')
+        const bindingPackageVersion = require('@homy/linguist-openharmony-arm/package.json').version
         if (bindingPackageVersion !== '1.1.1' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
           throw new Error(`Native binding package version mismatch, expected 1.1.1 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
@@ -514,7 +514,7 @@ if (!nativeBinding || process.env.NAPI_RS_FORCE_WASI) {
   let wasiBinding = null
   let wasiBindingError = null
   try {
-    wasiBinding = require('./package-template.wasi.cjs')
+    wasiBinding = require('./linguisto.wasi.cjs')
     nativeBinding = wasiBinding
   } catch (err) {
     if (process.env.NAPI_RS_FORCE_WASI) {
@@ -523,7 +523,7 @@ if (!nativeBinding || process.env.NAPI_RS_FORCE_WASI) {
   }
   if (!nativeBinding) {
     try {
-      wasiBinding = require('@napi-rs/package-template-pnpm-wasm32-wasi')
+      wasiBinding = require('@homy/linguist-wasm32-wasi')
       nativeBinding = wasiBinding
     } catch (err) {
       if (process.env.NAPI_RS_FORCE_WASI) {
@@ -557,4 +557,4 @@ if (!nativeBinding) {
 }
 
 module.exports = nativeBinding
-module.exports.plus100 = nativeBinding.plus100
+module.exports.analyzeDirectory = nativeBinding.analyzeDirectory
