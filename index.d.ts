@@ -6,4 +6,5 @@ export interface LanguageStat {
   lang: string
   count: number
   ratio: number
+  isProgramming: boolean
 }

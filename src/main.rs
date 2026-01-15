@@ -1,5 +1,5 @@
 use colored::*;
-use linguisto::analyze_directory;
+use linguisto::{analyze_directory, LanguageStat};
 use std::env;
 use std::error::Error;
 
@@ -7,26 +7,55 @@ fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<String> = env::args().collect();
 
     let mut json_mode = false;
+    let mut show_all = false;
     let mut dir_path = ".".to_string();
 
     // 简单的参数解析
     for arg in args.iter().skip(1) {
         if arg == "--json" {
             json_mode = true;
+        } else if arg == "--all" {
+            show_all = true;
         } else if !arg.starts_with("--") {
             dir_path = arg.clone();
         }
     }
 
-    let result = analyze_directory(dir_path);
+    let raw_result = analyze_directory(dir_path);
+    let final_result = if show_all {
+        raw_result
+    } else {
+        process_stats_for_ui(raw_result)
+    };
 
     if json_mode {
-        println!("{}", serde_json::to_string_pretty(&result)?);
+        println!("{}", serde_json::to_string_pretty(&final_result)?);
     } else {
-        render_terminal_ui(&result);
+        render_terminal_ui(&final_result);
     }
 
     Ok(())
+}
+
+fn process_stats_for_ui(stats: Vec<LanguageStat>) -> Vec<LanguageStat> {
+    // 1. 过滤出编程语言
+    let mut programming_stats: Vec<LanguageStat> = stats
+        .into_iter()
+        .filter(|s| s.is_programming)
+        .collect();
+
+    let total_programming_count: u32 = programming_stats.iter().map(|s| s.count).sum();
+
+    if total_programming_count > 0 {
+        // 2. 重新计算占比（仅针对编程语言内部）
+        for stat in &mut programming_stats {
+            stat.ratio = stat.count as f64 / total_programming_count as f64;
+        }
+    }
+
+    // 3. 排序
+    programming_stats.sort_by(|a, b| b.count.cmp(&a.count));
+    programming_stats
 }
 
 fn get_color(lang: &str) -> Color {
@@ -84,9 +113,9 @@ fn get_color(lang: &str) -> Color {
     }
 }
 
-fn render_terminal_ui(stats: &[linguisto::LanguageStat]) {
+fn render_terminal_ui(stats: &[LanguageStat]) {
     if stats.is_empty() {
-        println!("{}", "未发现识别的代码文件".bright_black());
+        println!("{}", "未发现识别的编程语言文件".bright_black());
         return;
     }
 
@@ -102,25 +131,25 @@ fn render_terminal_ui(stats: &[linguisto::LanguageStat]) {
         } else {
             (stat.ratio * bar_width as f64).round() as usize
         };
-        
+
         if width > 0 {
             let segment = "█".repeat(width);
             bar_str.push_str(&segment.color(color).to_string());
             current_width += width;
         }
     }
-    
+
     println!("\n{}\n", bar_str);
 
     // 2. 绘制图例
     let mut legend_lines = Vec::new();
     let mut current_line = String::new();
-    
+
     for stat in stats {
         let color = get_color(&stat.lang);
         let bullet = "●".color(color);
         let text = format!("{} {} {:.1}%   ", bullet, stat.lang.bold(), stat.ratio * 100.0);
-        
+
         if current_line.len() + text.len() > 80 {
             legend_lines.push(current_line);
             current_line = text;
