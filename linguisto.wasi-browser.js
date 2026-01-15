@@ -57,3 +57,4 @@ const {
 })
 export default __napiModule.exports
 export const analyzeDirectory = __napiModule.exports.analyzeDirectory
+export const analyzeDirectorySync = __napiModule.exports.analyzeDirectorySync

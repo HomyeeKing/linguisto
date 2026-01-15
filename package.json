@@ -1,12 +1,12 @@
 {
   "name": "@homy/linguist",
-  "version": "0.0.1",
-  "description": "Template project for writing node package with napi-rs",
+  "version": "0.1.1",
+  "description": "A high-performance code language analysis tool based on github-linguist",
   "main": "index.js",
   "types": "index.d.ts",
   "browser": "browser.js",
   "repository": {
-    "url": "git+ssh://git@github.com/napi-rs/package-template-pnpm.git",
+    "url": "https://github.com/HomyeeKing/linguist.git",
     "type": "git"
   },
   "license": "MIT",
@@ -63,7 +63,8 @@
     "release:beta": "bumpp --preid beta -x 'npm publish --tag beta --access public'",
     "release": "bumpp -x 'npm publish --access public'",
     "test": "ava",
-    "version": "napi version"
+    "version": "napi version",
+    "build:all": "npm run build && cargo build"
   },
   "devDependencies": {
     "@emnapi/core": "^1.5.0",
@@ -119,19 +120,19 @@
   },
   "packageManager": "pnpm@10.28.0",
   "optionalDependencies": {
-    "@homy/linguist-darwin-x64": "0.0.1",
-    "@homy/linguist-darwin-arm64": "0.0.1",
-    "@homy/linguist-linux-x64-gnu": "0.0.1",
-    "@homy/linguist-win32-x64-msvc": "0.0.1",
-    "@homy/linguist-linux-x64-musl": "0.0.1",
-    "@homy/linguist-linux-arm64-gnu": "0.0.1",
-    "@homy/linguist-win32-ia32-msvc": "0.0.1",
-    "@homy/linguist-linux-arm-gnueabihf": "0.0.1",
-    "@homy/linguist-android-arm64": "0.0.1",
-    "@homy/linguist-freebsd-x64": "0.0.1",
-    "@homy/linguist-linux-arm64-musl": "0.0.1",
-    "@homy/linguist-win32-arm64-msvc": "0.0.1",
-    "@homy/linguist-android-arm-eabi": "0.0.1",
-    "@homy/linguist-wasm32-wasi": "0.0.1"
+    "@homy/linguist-darwin-x64": "0.1.1",
+    "@homy/linguist-darwin-arm64": "0.1.1",
+    "@homy/linguist-linux-x64-gnu": "0.1.1",
+    "@homy/linguist-win32-x64-msvc": "0.1.1",
+    "@homy/linguist-linux-x64-musl": "0.1.1",
+    "@homy/linguist-linux-arm64-gnu": "0.1.1",
+    "@homy/linguist-win32-ia32-msvc": "0.1.1",
+    "@homy/linguist-linux-arm-gnueabihf": "0.1.1",
+    "@homy/linguist-android-arm64": "0.1.1",
+    "@homy/linguist-freebsd-x64": "0.1.1",
+    "@homy/linguist-linux-arm64-musl": "0.1.1",
+    "@homy/linguist-win32-arm64-msvc": "0.1.1",
+    "@homy/linguist-android-arm-eabi": "0.1.1",
+    "@homy/linguist-wasm32-wasi": "0.1.1"
   }
 }

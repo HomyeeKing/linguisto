@@ -1,85 +1,143 @@
-# `@napi-rs/package-template`
+# Linguisto
 
-![https://github.com/napi-rs/package-template/actions](https://github.com/napi-rs/package-template/workflows/CI/badge.svg)
+[简体中文](./README-zh.md)
 
-> Template project for writing node packages with napi-rs.
+[![NPM version](https://img.shields.io/npm/v/@homy/linguist.svg?style=flat)](https://npmjs.com/package/@homy/linguist) [![NPM downloads](https://img.shields.io/npm/dm/@homy/linguist.svg?style=flat)](https://npmjs.com/package/@homy/linguist) [![License](https://img.shields.io/npm/l/@homy/linguist.svg?style=flat)](./LICENSE)
 
-# Usage
+## Introduction
 
-1. Click **Use this template**.
-2. **Clone** your project.
-3. Run `pnpm install` to install dependencies.
-4. Run `npx napi rename -n [name]` command under the project folder to rename your package.
+**Linguisto** is a high-performance code language analysis tool based on [github-linguist](https://github.com/github-linguist/linguist). Built with Rust and providing Node.js bindings via [NAPI-RS](https://napi.rs/), it quickly scans directories to count files, calculate byte sizes, and determine language percentages, while intelligently filtering out third-party dependencies and ignored files.
 
-## Install this test package
+## Features
 
+- **Superior Performance**: Written in Rust, leveraging multi-threading for fast file system traversal.
+- **Smart Filtering**: Automatically respects `.gitignore`, skips hidden files, and excludes vendored files (e.g., `node_modules`).
+- **Precise Detection**: Based on robust language detection algorithms, supporting filename, extension, and content-based disambiguation.
+- **Beautiful Output**: Provides a colorful terminal UI with progress bars, supporting sorting by bytes or file count.
+- **Data Integration**: Supports JSON output for easy integration with other tools.
+- **Cross-platform**: Supports macOS, Linux, Windows, and WASI environments.
+
+## Table of Contents
+
+<!-- toc -->
+
+- [Install](#install)
+- [Usage](#usage)
+  - [CLI Usage](#cli-usage)
+  - [Programmatic Usage](#programmatic-usage)
+- [References](#references)
+  - [analyzeDirectory(dir)](#analyzedirectorydir)
+  - [analyzeDirectorySync(dir)](#analyzedirectorysyncdir)
+  - [LanguageStat](#languagestat)
+- [License](#license)
+
+<!-- tocstop -->
+
+## Install
+
+### For CLI
+
+If you have Rust installed, you can install it via Cargo:
+
+```bash
+cargo install linguisto
 ```
-pnpm add @napi-rs/package-template
+
+Or install it globally via npm:
+
+```bash
+npm install -g @homy/linguist
+```
+
+### For API
+
+Install it as a dependency in your Node.js project:
+
+```bash
+npm install @homy/linguist
 ```
 
 ## Usage
 
-### Build
+### CLI Usage
 
-After `pnpm build` command, you can see `package-template.[darwin|win32|linux].node` file in project root. This is the native addon built from [lib.rs](./src/lib.rs).
-
-### Test
-
-With [ava](https://github.com/avajs/ava), run `pnpm test` to testing native addon. You can also switch to another testing framework if you want.
-
-### CI
-
-With GitHub Actions, each commit and pull request will be built and tested automatically in [`node@18`, `node@20`] x [`macOS`, `Linux`, `Windows`] matrix. You will never be afraid of the native addon broken in these platforms.
-
-### Release
-
-Release native package is very difficult in old days. Native packages may ask developers who use it to install `build toolchain` like `gcc/llvm`, `node-gyp` or something more.
-
-With `GitHub actions`, we can easily prebuild a `binary` for major platforms. And with `N-API`, we should never be afraid of **ABI Compatible**.
-
-The other problem is how to deliver prebuild `binary` to users. Downloading it in `postinstall` script is a common way that most packages do it right now. The problem with this solution is it introduced many other packages to download binary that has not been used by `runtime codes`. The other problem is some users may not easily download the binary from `GitHub/CDN` if they are behind a private network (But in most cases, they have a private NPM mirror).
-
-In this package, we choose a better way to solve this problem. We release different `npm packages` for different platforms. And add it to `optionalDependencies` before releasing the `Major` package to npm.
-
-`NPM` will choose which native package should download from `registry` automatically. You can see [npm](./npm) dir for details. And you can also run `pnpm add @napi-rs/package-template` to see how it works.
-
-## Develop requirements
-
-- Install the latest `Rust`
-- Install `Node.js@16+` which fully supported `Node-API`
-- Run `corepack enable`
-
-## Test in local
-
-- pnpm
-- pnpm build
-- pnpm test
-
-And you will see:
+Run it in the current directory to see an intuitive language distribution chart (sorted by byte size by default):
 
 ```bash
-$ ava --verbose
-
-  ✔ sync function from native code
-  ✔ sleep function from native code (201ms)
-  ─
-
-  2 tests passed
-✨  Done in 1.12s.
+linguisto
 ```
 
-## Release package
+Analyze a specific directory:
 
-Ensure you have set your **NPM_TOKEN** in the `GitHub` project setting.
-
-In `Settings -> Secrets`, add **NPM_TOKEN** into it.
-
-When you want to release the package:
-
-```
-npm version [<newversion> | major | minor | patch | premajor | preminor | prepatch | prerelease [--preid=<prerelease-id>] | from-git]
-
-git push
+```bash
+linguisto /path/to/your/project
 ```
 
-GitHub actions will do the rest job for you.
+#### Common Options
+
+- `--json`: Output results in JSON format.
+- `--all`: Show all detected files (by default, it only shows programming languages and filters out some configuration files).
+- `--sort <type>`: Sort results. `type` can be `file_count` (descending) or `bytes` (descending, default).
+- `--max-lang <number>`: Maximum number of languages to display individually. Remaining languages will be grouped into "Other" (default: 6).
+
+#### Example
+
+```bash
+# Get JSON stats for the current project sorted by file count
+linguisto . --json --sort=file_count
+```
+
+### Programmatic Usage
+
+You can call the API provided by `@homy/linguist` directly in your Node.js or TypeScript code.
+
+```javascript
+const { analyzeDirectory, analyzeDirectorySync } = require('@homy/linguist');
+
+// Asynchronous analysis (recommended for large directories)
+async function run() {
+  const stats = await analyzeDirectory('./src');
+  console.log(stats);
+}
+
+run();
+
+// Synchronous analysis
+const syncStats = analyzeDirectorySync('./src');
+console.log(syncStats);
+```
+
+## References
+
+### analyzeDirectory(dir)
+
+- Type: `(dir: string) => Promise<LanguageStat[]>`
+
+Asynchronously analyzes the target directory and returns an array of language statistics.
+
+### analyzeDirectorySync(dir)
+
+- Type: `(dir: string) => LanguageStat[]`
+
+Synchronously analyzes the target directory and returns an array of language statistics.
+
+### LanguageStat
+
+Each statistical object contains the following fields:
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `lang` | `string` | Detected language name (e.g., "Rust", "TypeScript") |
+| `count` | `number` | Number of files for this language |
+| `bytes` | `number` | Total bytes occupied by files of this language |
+| `ratio` | `number` | Percentage in the overall project (0.0 - 1.0) |
+| `isProgramming` | `boolean` | Whether it is a programming language |
+
+## Credits
+
+- [github-linguist/linguist](https://github.com/github-linguist/linguist) - The project that inspired this tool and provides the language detection logic.
+- [drshade/linguist](https://github.com/drshade/linguist) - A Rust implementation of linguist that served as a reference.
+
+## License
+
+[MIT](./LICENSE) © [Homyee King](https://github.com/HomyeeKing)
