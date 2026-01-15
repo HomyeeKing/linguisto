@@ -4,6 +4,12 @@ authors = ["Homyee King"]
 edition = "2021"
 name = "linguisto"
 version = "0.1.0"
+description = "A high-performance code language analysis tool based on github-linguist"
+license = "MIT"
+repository = "https://github.com/HomyeeKing/linguist"
+readme = "README.md"
+keywords = ["linguist", "language-detection", "code-analysis", "napi-rs"]
+categories = ["development-tools"]
 
 [lib]
 crate-type = ["cdylib", "rlib"]

@@ -5,6 +5,7 @@ export declare function analyzeDirectory(dirPath: string): Array<LanguageStat>
 export interface LanguageStat {
   lang: string
   count: number
+  bytes: number
   ratio: number
   isProgramming: boolean
 }
