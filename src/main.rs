@@ -8,6 +8,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let mut json_mode = false;
     let mut show_all = false;
+    let mut sort_by_bytes = true;
     let mut dir_path = ".".to_string();
 
     // 简单的参数解析
@@ -16,16 +17,22 @@ fn main() -> Result<(), Box<dyn Error>> {
             json_mode = true;
         } else if arg == "--all" {
             show_all = true;
+        } else if arg == "--sort=file_count" {
+            sort_by_bytes = false;
+        } else if arg == "--sort=bytes" {
+            sort_by_bytes = true;
         } else if !arg.starts_with("--") {
             dir_path = arg.clone();
         }
     }
 
     let raw_result = analyze_directory(dir_path);
+    
+    // 无论是默认还是 --all，都根据排序策略重新计算比例
     let final_result = if show_all {
-        raw_result
+        recalculate_ratios(raw_result, sort_by_bytes)
     } else {
-        process_stats_for_ui(raw_result)
+        process_stats_for_ui(raw_result, sort_by_bytes)
     };
 
     if json_mode {
@@ -37,25 +44,36 @@ fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn process_stats_for_ui(stats: Vec<LanguageStat>) -> Vec<LanguageStat> {
+fn recalculate_ratios(mut stats: Vec<LanguageStat>, sort_by_bytes: bool) -> Vec<LanguageStat> {
+    if sort_by_bytes {
+        let total_bytes: i64 = stats.iter().map(|s| s.bytes).sum();
+        if total_bytes > 0 {
+            for stat in &mut stats {
+                stat.ratio = stat.bytes as f64 / total_bytes as f64;
+            }
+        }
+        stats.sort_by(|a, b| b.bytes.cmp(&a.bytes));
+    } else {
+        let total_count: u32 = stats.iter().map(|s| s.count).sum();
+        if total_count > 0 {
+            for stat in &mut stats {
+                stat.ratio = stat.count as f64 / total_count as f64;
+            }
+        }
+        stats.sort_by(|a, b| b.count.cmp(&a.count));
+    }
+    stats
+}
+
+fn process_stats_for_ui(stats: Vec<LanguageStat>, sort_by_bytes: bool) -> Vec<LanguageStat> {
     // 1. 过滤出编程语言
-    let mut programming_stats: Vec<LanguageStat> = stats
+    let programming_stats: Vec<LanguageStat> = stats
         .into_iter()
         .filter(|s| s.is_programming)
         .collect();
 
-    let total_programming_count: u32 = programming_stats.iter().map(|s| s.count).sum();
-
-    if total_programming_count > 0 {
-        // 2. 重新计算占比（仅针对编程语言内部）
-        for stat in &mut programming_stats {
-            stat.ratio = stat.count as f64 / total_programming_count as f64;
-        }
-    }
-
-    // 3. 排序
-    programming_stats.sort_by(|a, b| b.count.cmp(&a.count));
-    programming_stats
+    // 2. 重新计算比例并排序
+    recalculate_ratios(programming_stats, sort_by_bytes)
 }
 
 fn get_color(lang: &str) -> Color {
@@ -115,7 +133,7 @@ fn get_color(lang: &str) -> Color {
 
 fn render_terminal_ui(stats: &[LanguageStat]) {
     if stats.is_empty() {
-        println!("{}", "未发现识别的编程语言文件".bright_black());
+        println!("{}", "未发现识别的文件".bright_black());
         return;
     }
 
