@@ -27,6 +27,7 @@
   - [编程方式使用](#编程方式使用)
 - [API 参考](#api-参考)
   - [analyzeDirectory(dir)](#analyzedirectorydir)
+  - [analyzeDirectorySync(dir)](#analyzedirectorysyncdir)
   - [LanguageStat](#languagestat)
 - [许可证](#许可证)
 
@@ -90,21 +91,34 @@ linguisto . --json --sort=file_count
 你可以直接在 Node.js 或 TypeScript 代码中调用 `@homy/linguist` 提供的 API。
 
 ```javascript
-const { analyzeDirectory } = require('@homy/linguist');
+const { analyzeDirectory, analyzeDirectorySync } = require('@homy/linguist');
 
-// 分析指定目录
-const stats = analyzeDirectory('./src');
+// 异步分析（推荐用于大型目录）
+async function run() {
+  const stats = await analyzeDirectory('./src');
+  console.log(stats);
+}
 
-console.log(stats);
+run();
+
+// 同步分析
+const syncStats = analyzeDirectorySync('./src');
+console.log(syncStats);
 ```
 
 ## API 参考
 
 ### analyzeDirectory(dir)
 
+- 类型: `(dir: string) => Promise<LanguageStat[]>`
+
+异步分析目标目录并返回包含语言统计信息的数组。
+
+### analyzeDirectorySync(dir)
+
 - 类型: `(dir: string) => LanguageStat[]`
 
-分析目标目录并返回包含语言统计信息的数组。
+同步分析目标目录并返回包含语言统计信息的数组。
 
 ### LanguageStat
 
@@ -114,7 +128,7 @@ console.log(stats);
 | :--- | :--- | :--- |
 | `lang` | `string` | 检测到的语言名称（如 "Rust", "TypeScript"） |
 | `count` | `number` | 该语言的文件数量 |
-| `bytes` | `bigint` | 该语言文件占用的总字节数 |
+| `bytes` | `number` | 该语言文件占用的总字节数 |
 | `ratio` | `number` | 在整个项目中的占比 (0.0 - 1.0) |
 | `isProgramming` | `boolean` | 是否为编程语言 |
 

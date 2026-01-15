@@ -75,7 +75,7 @@ fn detect_file_language(file_path: &str) -> Option<(String, bool)> {
       let final_lang = lang.unwrap_or_else(|| languages[0].clone());
       return Some((
         final_lang.name.to_string(),
-        matches!(final_lang.definition.language_type, linguist_types::LanguageType::Programming)
+        is_primary_language(&final_lang.definition.language_type),
       ));
     }
   }
@@ -102,13 +102,21 @@ fn detect_file_language(file_path: &str) -> Option<(String, bool)> {
         let final_lang = lang.unwrap_or_else(|| languages[0].clone());
         return Some((
           final_lang.name.to_string(),
-          matches!(final_lang.definition.language_type, linguist_types::LanguageType::Programming)
+          is_primary_language(&final_lang.definition.language_type),
         ));
       }
     }
   }
 
   None
+}
+
+/// 判定是否为主要语言（包括编程语言和标记语言如 CSS/HTML）
+fn is_primary_language(lang_type: &linguist_types::LanguageType) -> bool {
+  matches!(
+    lang_type,
+    linguist_types::LanguageType::Programming | linguist_types::LanguageType::Markup
+  )
 }
 
 #[napi(js_name = "analyzeDirectorySync")]

@@ -27,6 +27,7 @@
   - [Programmatic Usage](#programmatic-usage)
 - [References](#references)
   - [analyzeDirectory(dir)](#analyzedirectorydir)
+  - [analyzeDirectorySync(dir)](#analyzedirectorysyncdir)
   - [LanguageStat](#languagestat)
 - [License](#license)
 
@@ -90,21 +91,34 @@ linguisto . --json --sort=file_count
 You can call the API provided by `@homy/linguist` directly in your Node.js or TypeScript code.
 
 ```javascript
-const { analyzeDirectory } = require('@homy/linguist');
+const { analyzeDirectory, analyzeDirectorySync } = require('@homy/linguist');
 
-// Analyze specific directory
-const stats = analyzeDirectory('./src');
+// Asynchronous analysis (recommended for large directories)
+async function run() {
+  const stats = await analyzeDirectory('./src');
+  console.log(stats);
+}
 
-console.log(stats);
+run();
+
+// Synchronous analysis
+const syncStats = analyzeDirectorySync('./src');
+console.log(syncStats);
 ```
 
 ## References
 
 ### analyzeDirectory(dir)
 
+- Type: `(dir: string) => Promise<LanguageStat[]>`
+
+Asynchronously analyzes the target directory and returns an array of language statistics.
+
+### analyzeDirectorySync(dir)
+
 - Type: `(dir: string) => LanguageStat[]`
 
-Analyzes the target directory and returns an array of language statistics.
+Synchronously analyzes the target directory and returns an array of language statistics.
 
 ### LanguageStat
 
@@ -114,7 +128,7 @@ Each statistical object contains the following fields:
 | :--- | :--- | :--- |
 | `lang` | `string` | Detected language name (e.g., "Rust", "TypeScript") |
 | `count` | `number` | Number of files for this language |
-| `bytes` | `bigint` | Total bytes occupied by files of this language |
+| `bytes` | `number` | Total bytes occupied by files of this language |
 | `ratio` | `number` | Percentage in the overall project (0.0 - 1.0) |
 | `isProgramming` | `boolean` | Whether it is a programming language |
 
