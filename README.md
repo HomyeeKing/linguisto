@@ -138,6 +138,11 @@ Running benchmark...
 
 From this run, **linguisto (native)** achieves roughly **30× higher throughput** than **linguist-js** on this project, thanks to Rust's multi-threaded file system traversal and native execution.
 
+Let's a real world case in `vscode` codebase :
+| linguisto | linguist-js |
+| :--- | :--- |
+| ![show-case](https://github.com/user-attachments/assets/e8f41431-1e55-40fb-9940-087671c0867c) | <video src="https://github.com/user-attachments/assets/715e73c0-62c3-4c12-974d-287ec0529a9f" controls width="300"></video> |
+
 ## References
 
 ### analyzeDirectory(dir)
