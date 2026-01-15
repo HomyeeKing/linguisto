@@ -1,6 +1,6 @@
 {
-  "name": "@napi-rs/package-template-pnpm",
-  "version": "1.1.1",
+  "name": "@homy/linguist",
+  "version": "0.0.1",
   "description": "Template project for writing node package with napi-rs",
   "main": "index.js",
   "types": "index.d.ts",
@@ -24,7 +24,7 @@
     "browser.js"
   ],
   "napi": {
-    "binaryName": "package-template",
+    "binaryName": "linguisto",
     "targets": [
       "x86_64-apple-darwin",
       "aarch64-apple-darwin",
@@ -60,6 +60,8 @@
     "format:rs": "cargo fmt",
     "lint": "oxlint",
     "prepublishOnly": "napi prepublish -t npm",
+    "release:beta": "bumpp --preid beta -x 'npm publish --tag beta --access public'",
+    "release": "bumpp -x 'npm publish --access public'",
     "test": "ava",
     "version": "napi version"
   },
@@ -72,6 +74,7 @@
     "@taplo/cli": "^0.7.0",
     "@tybys/wasm-util": "^0.10.0",
     "ava": "^6.4.1",
+    "bumpp": "^10.4.0",
     "chalk": "^5.6.2",
     "emnapi": "^1.5.0",
     "husky": "^9.1.7",
@@ -114,5 +117,21 @@
     "singleQuote": true,
     "arrowParens": "always"
   },
-  "packageManager": "pnpm@10.28.0"
+  "packageManager": "pnpm@10.28.0",
+  "optionalDependencies": {
+    "@homy/linguist-darwin-x64": "0.0.1",
+    "@homy/linguist-darwin-arm64": "0.0.1",
+    "@homy/linguist-linux-x64-gnu": "0.0.1",
+    "@homy/linguist-win32-x64-msvc": "0.0.1",
+    "@homy/linguist-linux-x64-musl": "0.0.1",
+    "@homy/linguist-linux-arm64-gnu": "0.0.1",
+    "@homy/linguist-win32-ia32-msvc": "0.0.1",
+    "@homy/linguist-linux-arm-gnueabihf": "0.0.1",
+    "@homy/linguist-android-arm64": "0.0.1",
+    "@homy/linguist-freebsd-x64": "0.0.1",
+    "@homy/linguist-linux-arm64-musl": "0.0.1",
+    "@homy/linguist-win32-arm64-msvc": "0.0.1",
+    "@homy/linguist-android-arm-eabi": "0.0.1",
+    "@homy/linguist-wasm32-wasi": "0.0.1"
+  }
 }
