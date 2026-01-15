@@ -51,6 +51,7 @@
   },
   "scripts": {
     "artifacts": "napi artifacts",
+    "prebench": "npm run build",
     "bench": "node --import @oxc-node/core/register benchmark/bench.ts",
     "build": "napi build --platform --release",
     "build:debug": "napi build --platform",
