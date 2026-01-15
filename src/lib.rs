@@ -2,6 +2,7 @@
 
 use ignore::WalkBuilder;
 use linguist::{detect_language_by_extension, detect_language_by_filename, is_vendored};
+use napi::bindgen_prelude::*;
 use napi_derive::napi;
 use serde::Serialize;
 use std::collections::HashMap;
@@ -110,8 +111,35 @@ fn detect_file_language(file_path: &str) -> Option<(String, bool)> {
   None
 }
 
-#[napi]
+#[napi(js_name = "analyzeDirectorySync")]
 pub fn analyze_directory(dir_path: String) -> Vec<LanguageStat> {
+  analyze_directory_internal(dir_path)
+}
+
+#[napi(js_name = "analyzeDirectory", ts_return_type = "Promise<Array<LanguageStat>>")]
+pub fn analyze_directory_async(dir_path: String) -> AsyncTask<AnalyzeTask> {
+  AsyncTask::new(AnalyzeTask { dir_path })
+}
+
+pub struct AnalyzeTask {
+  pub dir_path: String,
+}
+
+#[napi]
+impl Task for AnalyzeTask {
+  type Output = Vec<LanguageStat>;
+  type JsValue = Vec<LanguageStat>;
+
+  fn compute(&mut self) -> Result<Self::Output> {
+    Ok(analyze_directory_internal(self.dir_path.clone()))
+  }
+
+  fn resolve(&mut self, _env: Env, output: Self::Output) -> Result<Self::JsValue> {
+    Ok(output)
+  }
+}
+
+fn analyze_directory_internal(dir_path: String) -> Vec<LanguageStat> {
   let path = Path::new(&dir_path);
   let files = collect_files(path);
   let mut language_stats: HashMap<String, (u32, i64, bool)> = HashMap::new();

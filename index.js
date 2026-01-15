@@ -558,3 +558,4 @@ if (!nativeBinding) {
 
 module.exports = nativeBinding
 module.exports.analyzeDirectory = nativeBinding.analyzeDirectory
+module.exports.analyzeDirectorySync = nativeBinding.analyzeDirectorySync

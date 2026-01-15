@@ -109,3 +109,4 @@ const { instance: __napiInstance, module: __wasiModule, napiModule: __napiModule
 })
 module.exports = __napiModule.exports
 module.exports.analyzeDirectory = __napiModule.exports.analyzeDirectory
+module.exports.analyzeDirectorySync = __napiModule.exports.analyzeDirectorySync
