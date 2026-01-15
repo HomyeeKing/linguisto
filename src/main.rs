@@ -123,7 +123,7 @@ fn recalculate_ratios(mut stats: Vec<LanguageStat>, sort_by_bytes: bool) -> Vec<
 }
 
 fn process_stats_for_ui(stats: Vec<LanguageStat>, sort_by_bytes: bool) -> Vec<LanguageStat> {
-    // 重新计算比例并排序
+    // Rust 侧已经对语言类型做了筛选，这里只负责重新计算比例并排序
     recalculate_ratios(stats, sort_by_bytes)
 }
 

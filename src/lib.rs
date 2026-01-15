@@ -63,8 +63,24 @@ fn collect_files_parallel(dir_path: &Path) -> Vec<(String, i64)> {
   rx.into_iter().collect()
 }
 
+/// 我们最终统计中是否要计入该语言
+/// - Programming: 全部计入
+/// - Markup: 只计入 HTML / CSS
+/// - 其它类型（Data / Prose / Text 等）不计入
+fn should_include_language(name: &str, lang_type: &linguist_types::LanguageType) -> bool {
+  match lang_type {
+    linguist_types::LanguageType::Programming => true,
+    linguist_types::LanguageType::Markup => {
+      let lower = name.to_lowercase();
+      lower == "html" || lower == "css"
+    }
+    _ => false,
+  }
+}
+
 /// 检测单个文件的语言（优化版：按需读取头部）
-fn detect_file_language(file_path: &str) -> Option<String> {
+/// 返回：规范化后的语言名，以及其 LanguageType（仅内部使用）
+fn detect_file_language(file_path: &str) -> Option<(String, linguist_types::LanguageType)> {
   // 1. 尝试通过文件名检测
   if let Ok(languages) = detect_language_by_filename(file_path) {
     if !languages.is_empty() {
@@ -81,7 +97,12 @@ fn detect_file_language(file_path: &str) -> Option<String> {
         languages[0].clone()
       };
 
-      return Some(final_lang.name.to_string());
+      let mut name = final_lang.name.to_string();
+      // 将 TSX 归类为 TypeScript，避免在结果中单独显示
+      if name.to_lowercase() == "tsx" {
+        name = "TypeScript".to_string();
+      }
+      return Some((name, final_lang.definition.language_type.clone()));
     }
   }
 
@@ -103,7 +124,12 @@ fn detect_file_language(file_path: &str) -> Option<String> {
           languages[0].clone()
         };
 
-        return Some(final_lang.name.to_string());
+        let mut name = final_lang.name.to_string();
+        // 将 TSX 归类为 TypeScript，避免在结果中单独显示
+        if name.to_lowercase() == "tsx" {
+          name = "TypeScript".to_string();
+        }
+        return Some((name, final_lang.definition.language_type.clone()));
       }
     }
   }
@@ -154,7 +180,11 @@ fn analyze_directory_internal(dir_path: String) -> Vec<LanguageStat> {
     .fold(
       HashMap::new,
       |mut acc: HashMap<String, (u32, i64)>, (file_path, size)| {
-        if let Some(language) = detect_file_language(file_path) {
+        if let Some((language, lang_type)) = detect_file_language(file_path) {
+          if !should_include_language(&language, &lang_type) {
+            return acc;
+          }
+
           let entry = acc.entry(language).or_insert((0u32, 0i64));
           entry.0 += 1;
           entry.1 += *size;
