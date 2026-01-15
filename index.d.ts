@@ -9,5 +9,4 @@ export interface LanguageStat {
   count: number
   bytes: number
   ratio: number
-  isProgramming: boolean
 }

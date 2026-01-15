@@ -90,14 +90,13 @@ fn collapse_tail_to_others(mut stats: Vec<LanguageStat>, max_lang: usize) -> Vec
         others_bytes += stat.bytes;
         others_ratio += stat.ratio;
     }
-
-    result.push(LanguageStat {
-        lang: "Other".to_string(),
-        count: others_count,
-        bytes: others_bytes,
-        ratio: others_ratio,
-        is_programming: true,
-    });
+  
+  result.push(LanguageStat {
+    lang: "Other".to_string(),
+    count: others_count,
+    bytes: others_bytes,
+    ratio: others_ratio,
+  });
 
     result
 }
@@ -124,14 +123,8 @@ fn recalculate_ratios(mut stats: Vec<LanguageStat>, sort_by_bytes: bool) -> Vec<
 }
 
 fn process_stats_for_ui(stats: Vec<LanguageStat>, sort_by_bytes: bool) -> Vec<LanguageStat> {
-    // 1. 过滤出编程语言
-    let programming_stats: Vec<LanguageStat> = stats
-        .into_iter()
-        .filter(|s| s.is_programming)
-        .collect();
-
-    // 2. 重新计算比例并排序
-    recalculate_ratios(programming_stats, sort_by_bytes)
+    // 重新计算比例并排序
+    recalculate_ratios(stats, sort_by_bytes)
 }
 
 fn get_color(lang: &str) -> Color {

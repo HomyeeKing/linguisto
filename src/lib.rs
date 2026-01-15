@@ -18,7 +18,6 @@ pub struct LanguageStat {
   pub count: u32,
   pub bytes: i64,
   pub ratio: f64,
-  pub is_programming: bool,
 }
 
 const READ_LIMIT: usize = 32768; // 32KB
@@ -65,7 +64,7 @@ fn collect_files_parallel(dir_path: &Path) -> Vec<(String, i64)> {
 }
 
 /// 检测单个文件的语言（优化版：按需读取头部）
-fn detect_file_language(file_path: &str) -> Option<(String, bool)> {
+fn detect_file_language(file_path: &str) -> Option<String> {
   // 1. 尝试通过文件名检测
   if let Ok(languages) = detect_language_by_filename(file_path) {
     if !languages.is_empty() {
@@ -82,10 +81,7 @@ fn detect_file_language(file_path: &str) -> Option<(String, bool)> {
         languages[0].clone()
       };
 
-      return Some((
-        final_lang.name.to_string(),
-        is_primary_language(&final_lang.definition.language_type),
-      ));
+      return Some(final_lang.name.to_string());
     }
   }
 
@@ -107,23 +103,12 @@ fn detect_file_language(file_path: &str) -> Option<(String, bool)> {
           languages[0].clone()
         };
 
-        return Some((
-          final_lang.name.to_string(),
-          is_primary_language(&final_lang.definition.language_type),
-        ));
+        return Some(final_lang.name.to_string());
       }
     }
   }
 
   None
-}
-
-/// 判定是否为主要语言
-fn is_primary_language(lang_type: &linguist_types::LanguageType) -> bool {
-  matches!(
-    lang_type,
-    linguist_types::LanguageType::Programming | linguist_types::LanguageType::Markup
-  )
 }
 
 #[napi(js_name = "analyzeDirectorySync")]
@@ -162,15 +147,15 @@ fn analyze_directory_internal(dir_path: String) -> Vec<LanguageStat> {
   if total_bytes == 0 {
     return Vec::new();
   }
-
+  
   // 并行检测语言
   let language_stats = files
     .par_iter()
     .fold(
       HashMap::new,
-      |mut acc: HashMap<String, (u32, i64, bool)>, (file_path, size)| {
-        if let Some((language, is_prog)) = detect_file_language(file_path) {
-          let entry = acc.entry(language).or_insert((0u32, 0i64, is_prog));
+      |mut acc: HashMap<String, (u32, i64)>, (file_path, size)| {
+        if let Some(language) = detect_file_language(file_path) {
+          let entry = acc.entry(language).or_insert((0u32, 0i64));
           entry.0 += 1;
           entry.1 += *size;
         }
@@ -178,8 +163,8 @@ fn analyze_directory_internal(dir_path: String) -> Vec<LanguageStat> {
       },
     )
     .reduce(HashMap::new, |mut acc1, acc2| {
-      for (lang, (count, bytes, is_prog)) in acc2 {
-        let entry = acc1.entry(lang).or_insert((0, 0, is_prog));
+      for (lang, (count, bytes)) in acc2 {
+        let entry = acc1.entry(lang).or_insert((0, 0));
         entry.0 += count;
         entry.1 += bytes;
       }
@@ -188,12 +173,11 @@ fn analyze_directory_internal(dir_path: String) -> Vec<LanguageStat> {
 
   let mut result: Vec<LanguageStat> = language_stats
     .into_iter()
-    .map(|(lang, (count, bytes, is_programming))| LanguageStat {
+    .map(|(lang, (count, bytes))| LanguageStat {
       lang,
       count,
       bytes,
       ratio: (bytes as f64 / total_bytes as f64),
-      is_programming,
     })
     .collect();
 
