@@ -10,9 +10,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut show_all = false;
     let mut sort_by_bytes = true;
     let mut dir_path = ".".to_string();
+    let mut max_lang = 6;
 
     // 简单的参数解析
-    for arg in args.iter().skip(1) {
+    let mut i = 1;
+    while i < args.len() {
+        let arg = &args[i];
         if arg == "--json" {
             json_mode = true;
         } else if arg == "--all" {
@@ -21,19 +24,31 @@ fn main() -> Result<(), Box<dyn Error>> {
             sort_by_bytes = false;
         } else if arg == "--sort=bytes" {
             sort_by_bytes = true;
+        } else if arg.starts_with("--max-lang=") {
+            if let Ok(val) = arg.replace("--max-lang=", "").parse::<usize>() {
+                max_lang = val;
+            }
+        } else if arg == "--max-lang" && i + 1 < args.len() {
+            if let Ok(val) = args[i + 1].parse::<usize>() {
+                max_lang = val;
+                i += 1;
+            }
         } else if !arg.starts_with("--") {
             dir_path = arg.clone();
         }
+        i += 1;
     }
 
     let raw_result = analyze_directory(dir_path);
     
     // 无论是默认还是 --all，都根据排序策略重新计算比例
-    let final_result = if show_all {
+    let stats = if show_all {
         recalculate_ratios(raw_result, sort_by_bytes)
     } else {
         process_stats_for_ui(raw_result, sort_by_bytes)
     };
+
+    let final_result = collapse_tail_to_others(stats, max_lang);
 
     if json_mode {
         println!("{}", serde_json::to_string_pretty(&final_result)?);
@@ -42,6 +57,35 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     Ok(())
+}
+
+fn collapse_tail_to_others(mut stats: Vec<LanguageStat>, max_lang: usize) -> Vec<LanguageStat> {
+    if stats.len() <= max_lang || max_lang == 0 {
+        return stats;
+    }
+
+    // 保留前 max_lang 个，剩下的合并为 Other
+    let mut result: Vec<LanguageStat> = stats.drain(0..max_lang).collect();
+
+    let mut others_count = 0;
+    let mut others_bytes = 0;
+    let mut others_ratio = 0.0;
+
+    for stat in stats {
+        others_count += stat.count;
+        others_bytes += stat.bytes;
+        others_ratio += stat.ratio;
+    }
+
+    result.push(LanguageStat {
+        lang: "Other".to_string(),
+        count: others_count,
+        bytes: others_bytes,
+        ratio: others_ratio,
+        is_programming: true,
+    });
+
+    result
 }
 
 fn recalculate_ratios(mut stats: Vec<LanguageStat>, sort_by_bytes: bool) -> Vec<LanguageStat> {
@@ -122,6 +166,11 @@ fn get_color(lang: &str) -> Color {
             r: 8,
             g: 63,
             b: 161,
+        },
+        "other" => Color::TrueColor {
+            r: 133,
+            g: 133,
+            b: 133,
         },
         _ => Color::TrueColor {
             r: 133,

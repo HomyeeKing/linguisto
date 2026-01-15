@@ -78,6 +78,7 @@ linguisto /path/to/your/project
 - `--json`: Output results in JSON format.
 - `--all`: Show all detected files (by default, it only shows programming languages and filters out some configuration files).
 - `--sort <type>`: Sort results. `type` can be `file_count` (descending) or `bytes` (descending, default).
+- `--max-lang <number>`: Maximum number of languages to display individually. Remaining languages will be grouped into "Other" (default: 6).
 
 #### Example
 

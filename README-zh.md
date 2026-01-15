@@ -78,6 +78,7 @@ linguisto /path/to/your/project
 - `--json`: 以 JSON 格式输出结果。
 - `--all`: 显示所有检测到的文件（默认仅显示编程语言，过滤掉部分配置文件等）。
 - `--sort <type>`: 排序方式。`type` 可以是 `file_count`（按文件数降序）或 `bytes`（按字节数降序，默认）。
+- `--max-lang <number>`: 最多显示的语言数量。多出的语言将被归类为 "Other"（默认：6）。
 
 #### 示例
 
