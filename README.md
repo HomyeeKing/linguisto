@@ -8,6 +8,12 @@
 
 **Linguisto** is a high-performance code language analysis tool based on [github-linguist](https://github.com/github-linguist/linguist). Built with Rust and providing Node.js bindings via [NAPI-RS](https://napi.rs/), it quickly scans directories to count files, calculate byte sizes, and determine language percentages, while intelligently filtering out third-party dependencies and ignored files.
 
+
+![show-case](https://github.com/user-attachments/assets/e8f41431-1e55-40fb-9940-087671c0867c)
+
+
+
+
 ## Features
 
 - **Superior Performance**: Written in Rust, leveraging multi-threading for fast file system traversal.
