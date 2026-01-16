@@ -141,7 +141,7 @@ From this run, **linguisto (native)** achieves roughly **30× higher throughput*
 Let's a real world case in `vscode` codebase :
 | linguisto | linguist-js |
 | :--- | :--- |
-| ![show-case](https://github.com/user-attachments/assets/e8f41431-1e55-40fb-9940-087671c0867c) | <video src="https://github.com/user-attachments/assets/715e73c0-62c3-4c12-974d-287ec0529a9f" controls width="300"></video> |
+| ![show-case](https://github.com/user-attachments/assets/e8f41431-1e55-40fb-9940-087671c0867c) | ![linguist-js](https://github.com/user-attachments/assets/3bfda736-f40d-4801-81a8-b1377e5192f4) |
 
 ## References
 
